@@ -14,6 +14,7 @@ using System.Text.Json;
 using System.IO;
 using System.Text.Encodings.Web;
 using System.Text.Unicode;
+using System.Diagnostics;
 
 
 namespace keyboard_programable
@@ -25,7 +26,7 @@ namespace keyboard_programable
         private const int _port = 59630;
         private string[] _key_letters_cache = { "_", "_", "_", "_", "_", "_", "_", "_", "_", "_", "_", "_", "_", "_", "_", "_" };
         private string[] _key_letters = { "U", "D", "L", "R", "A", "B", "C", "D", "L", "l", "R", "r", "E", "T", "1", "2" };
-        private string[] _key_layouts = { "UP", "DOWN", "LEFT", "RIGHT", "A", "B", "C", "D", "L1", "L2", "R1", "R2", "SELECT", "START", "ONE", "TWO" };
+        private string[] _key_layouts = { "UP", "DOWN", "LEFT", "RIGHT", "A", "B", "C", "D", "L1", "L2", "R1", "R2", "SELECT", "START", "1", "2" };
         private string _filename = "";
         private Parameter _param;
         
@@ -42,6 +43,10 @@ namespace keyboard_programable
 
             read_json(_filename);
             //TODO load laytouts name
+            foreach (var k in _param.key_layouts)
+            {
+                comboBoxLayout.Items.Add(k.name);
+            }
             comboBoxLayout.SelectedIndex = 0;
 
             IPEndPoint localEP = new IPEndPoint(IPAddress.Any, _port);
@@ -65,7 +70,14 @@ namespace keyboard_programable
                 writer.WriteLine(json_str);
             }
         }
-
+        private void pressKeyEvent(int key_index)
+        {
+            var event_text = listView1.Items[key_index].SubItems[1].Text;
+            if (event_text != "")
+            {
+                SendKeys.Send(event_text);
+            }
+        }
 
         private void SetMessage(string msg)
         {
@@ -84,7 +96,7 @@ namespace keyboard_programable
                     if (_key_letters[i] == key_letter)
                     {
                         // press event
-
+                        pressKeyEvent(i);
                     }
                 }
             }
@@ -122,7 +134,8 @@ namespace keyboard_programable
             }
             else
             {
-                PerseEvent(rcvMsg);
+                //PerseEvent(rcvMsg);
+                this.Invoke(new Action<string>(this.PerseEvent), rcvMsg);
             }
             udp.BeginReceive(ReceiveCallback, udp);
         }
@@ -147,10 +160,38 @@ namespace keyboard_programable
         {
             int index = comboBoxLayout.SelectedIndex;
             // TODO: load layout to listview
+            var layout = _param.key_layouts[index];
+            listView1.Items[0].SubItems[1].Text = layout.UP;
+            listView1.Items[1].SubItems[1].Text = layout.DOWN;
+            listView1.Items[2].SubItems[1].Text = layout.LEFT;
+            listView1.Items[3].SubItems[1].Text = layout.RIGHT;
+            listView1.Items[4].SubItems[1].Text = layout.A;
+            listView1.Items[5].SubItems[1].Text = layout.B;
+            listView1.Items[6].SubItems[1].Text = layout.C;
+            listView1.Items[7].SubItems[1].Text = layout.D;
+            listView1.Items[8].SubItems[1].Text = layout.L1;
+            listView1.Items[9].SubItems[1].Text = layout.L2;
+            listView1.Items[10].SubItems[1].Text = layout.R1;
+            listView1.Items[11].SubItems[1].Text = layout.R2;
+            listView1.Items[12].SubItems[1].Text = layout.SELECT;
+            listView1.Items[13].SubItems[1].Text = layout.START;
+            listView1.Items[14].SubItems[1].Text = layout.ONE;
+            listView1.Items[15].SubItems[1].Text = layout.TWO;
+        }
+
+        private void buttonHelp_Click(object sender, EventArgs e)
+        {
+            ProcessStartInfo pi = new ProcessStartInfo()
+            {
+                FileName = "https://learn.microsoft.com/ja-jp/dotnet/api/system.windows.forms.sendkeys.send",
+                UseShellExecute = true,
+            };
+            Process.Start(pi);
         }
     }
     public class key_layout
     {
+        public string name { get; set; }
         public string UP { get; set; }
         public string DOWN { get; set; }
         public string LEFT { get; set; }
