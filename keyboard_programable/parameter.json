@@ -1,0 +1,23 @@
+{
+  "key_layouts": [
+    {
+      "name": "for youtube",
+      "UP": "f",
+      "DOWN": "",
+      "LEFT": "z",
+      "RIGHT": "x",
+      "A": "",
+      "B": "",
+      "C": "",
+      "D": "",
+      "L1": "CTRL,n",
+      "L2": "CTRL,w",
+      "R1": "",
+      "R2": "",
+      "SELECT": "",
+      "START": "",
+      "ONE": "",
+      "TWO": ""
+    }
+  ]
+}

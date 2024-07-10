@@ -50,7 +50,7 @@ namespace keyboard_programable
             this.columnHeaderKey = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnHeaderKeyEvent = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.labelMessage = new System.Windows.Forms.Label();
-            this.comboBox1 = new System.Windows.Forms.ComboBox();
+            this.comboBoxLayout = new System.Windows.Forms.ComboBox();
             this.SuspendLayout();
             // 
             // listView1
@@ -104,21 +104,22 @@ namespace keyboard_programable
             this.labelMessage.TabIndex = 1;
             this.labelMessage.Text = "message:";
             // 
-            // comboBox1
+            // comboBoxLayout
             // 
-            this.comboBox1.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.comboBox1.FormattingEnabled = true;
-            this.comboBox1.Location = new System.Drawing.Point(8, 4);
-            this.comboBox1.Name = "comboBox1";
-            this.comboBox1.Size = new System.Drawing.Size(240, 20);
-            this.comboBox1.TabIndex = 2;
+            this.comboBoxLayout.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.comboBoxLayout.FormattingEnabled = true;
+            this.comboBoxLayout.Location = new System.Drawing.Point(8, 4);
+            this.comboBoxLayout.Name = "comboBoxLayout";
+            this.comboBoxLayout.Size = new System.Drawing.Size(240, 20);
+            this.comboBoxLayout.TabIndex = 2;
+            this.comboBoxLayout.SelectedIndexChanged += new System.EventHandler(this.comboBoxLayout_SelectedIndexChanged);
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(257, 338);
-            this.Controls.Add(this.comboBox1);
+            this.Controls.Add(this.comboBoxLayout);
             this.Controls.Add(this.labelMessage);
             this.Controls.Add(this.listView1);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
@@ -138,7 +139,7 @@ namespace keyboard_programable
         private System.Windows.Forms.ColumnHeader columnHeaderKey;
         private System.Windows.Forms.ColumnHeader columnHeaderKeyEvent;
         private System.Windows.Forms.Label labelMessage;
-        private System.Windows.Forms.ComboBox comboBox1;
+        private System.Windows.Forms.ComboBox comboBoxLayout;
     }
 }
 
