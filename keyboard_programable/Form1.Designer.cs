@@ -84,6 +84,7 @@ namespace keyboard_programable
             this.labelMessage = new System.Windows.Forms.Label();
             this.comboBoxLayout = new System.Windows.Forms.ComboBox();
             this.buttonHelp = new System.Windows.Forms.Button();
+            this.buttonEdit = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // listView1
@@ -157,11 +158,22 @@ namespace keyboard_programable
             this.buttonHelp.UseVisualStyleBackColor = true;
             this.buttonHelp.Click += new System.EventHandler(this.buttonHelp_Click);
             // 
+            // buttonEdit
+            // 
+            this.buttonEdit.Location = new System.Drawing.Point(192, 316);
+            this.buttonEdit.Name = "buttonEdit";
+            this.buttonEdit.Size = new System.Drawing.Size(28, 20);
+            this.buttonEdit.TabIndex = 4;
+            this.buttonEdit.Text = "E";
+            this.buttonEdit.UseVisualStyleBackColor = true;
+            this.buttonEdit.Click += new System.EventHandler(this.buttonEdit_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(257, 355);
+            this.ClientSize = new System.Drawing.Size(257, 343);
+            this.Controls.Add(this.buttonEdit);
             this.Controls.Add(this.buttonHelp);
             this.Controls.Add(this.comboBoxLayout);
             this.Controls.Add(this.labelMessage);
@@ -186,6 +198,7 @@ namespace keyboard_programable
         private System.Windows.Forms.Label labelMessage;
         private System.Windows.Forms.ComboBox comboBoxLayout;
         private System.Windows.Forms.Button buttonHelp;
+        private System.Windows.Forms.Button buttonEdit;
     }
 }
 

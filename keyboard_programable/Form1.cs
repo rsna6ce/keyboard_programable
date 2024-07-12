@@ -29,7 +29,8 @@ namespace keyboard_programable
         private string[] _key_layouts = { "UP", "DOWN", "LEFT", "RIGHT", "A", "B", "C", "D", "L1", "L2", "R1", "R2", "SELECT", "START", "1", "2" };
         private string _filename = "";
         private Parameter _param;
-        
+        private ToolTip _toolTipEdit;
+        private ToolTip _toolTipHelp;
 
         public Form1()
         {
@@ -41,8 +42,23 @@ namespace keyboard_programable
             string exe_dir = Path.GetDirectoryName(Application.ExecutablePath) + @"\";
             _filename = exe_dir + "parameter.json";
 
+            _toolTipEdit = new ToolTip();
+            _toolTipEdit.InitialDelay = 500;
+            _toolTipEdit.ReshowDelay = 500;
+            _toolTipEdit.AutoPopDelay = 10000;
+            _toolTipEdit.ShowAlways = true;
+            _toolTipEdit.SetToolTip(buttonEdit, "edit parameter.json");
+
+            _toolTipHelp = new ToolTip();
+            _toolTipHelp.InitialDelay = 500;
+            _toolTipHelp.ReshowDelay = 500;
+            _toolTipHelp.AutoPopDelay = 10000;
+            _toolTipHelp.ShowAlways = true;
+            _toolTipHelp.SetToolTip(buttonHelp, "help msdn keyevent");
+
+
             read_json(_filename);
-            //TODO load laytouts name
+            comboBoxLayout.Items.Clear();
             foreach (var k in _param.key_layouts)
             {
                 comboBoxLayout.Items.Add(k.name);
@@ -187,6 +203,19 @@ namespace keyboard_programable
                 UseShellExecute = true,
             };
             Process.Start(pi);
+        }
+
+        private void buttonEdit_Click(object sender, EventArgs e)
+        {
+            System.Diagnostics.Process p = System.Diagnostics.Process.Start(_filename);
+            p.WaitForExit();
+            read_json(_filename);
+            comboBoxLayout.Items.Clear();
+            foreach (var k in _param.key_layouts)
+            {
+                comboBoxLayout.Items.Add(k.name);
+            }
+            comboBoxLayout.SelectedIndex = 0;
         }
     }
     public class key_layout
