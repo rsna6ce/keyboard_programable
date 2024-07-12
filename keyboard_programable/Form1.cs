@@ -207,7 +207,7 @@ namespace keyboard_programable
 
         private void buttonEdit_Click(object sender, EventArgs e)
         {
-            System.Diagnostics.Process p = System.Diagnostics.Process.Start(_filename);
+            System.Diagnostics.Process p = System.Diagnostics.Process.Start("notepad.exe", _filename);
             p.WaitForExit();
             read_json(_filename);
             comboBoxLayout.Items.Clear();
