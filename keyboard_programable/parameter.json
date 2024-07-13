@@ -2,6 +2,7 @@
   "key_layouts": [
     {
       "name": "for youtube",
+      "icon": "computer_tenkey.ico",
       "UP": "F",
       "DOWN": "{RIGHT}",
       "LEFT": "Z",
@@ -15,7 +16,27 @@
       "R1": "",
       "R2": "",
       "SELECT": "^{TAB}",
-      "START": "",
+      "START": "<SWITCH_MODE>",
+      "ONE": "",
+      "TWO": ""
+    },
+    {
+      "name": "for mouse",
+      "icon": "computer_mouse_cord.ico",
+      "UP": "MOUSE_UP_1",
+      "DOWN": "MOUSE_DOWN_1",
+      "LEFT": "MOUSE_LEFT_1",
+      "RIGHT": "MOUSE_RIGHT_1",
+      "A": "MOUSE_RCLICK",
+      "B": "MOUSE_WHEEL_-1",
+      "C": "MOUSE_WHEEL_1",
+      "D": "MOUSE_LCLICK",
+      "L1": "MOUSE_LCLICK",
+      "L2": "MOUSE_RCLICK",
+      "R1": "",
+      "R2": "",
+      "SELECT": "",
+      "START": "<SWITCH_MODE>",
       "ONE": "",
       "TWO": ""
     }

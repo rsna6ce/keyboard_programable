@@ -15,12 +15,74 @@ using System.IO;
 using System.Text.Encodings.Web;
 using System.Text.Unicode;
 using System.Diagnostics;
+using System.Runtime.InteropServices;
+
 
 
 namespace keyboard_programable
 {
     public partial class Form1 : Form
     {
+        [StructLayout(LayoutKind.Sequential)]
+        public struct MOUSEINPUT
+        {
+            public int dx;
+            public int dy;
+            public int mouseData;
+            public int dwFlags;
+            public int time;
+            public IntPtr dwExtraInfo;
+        };
+
+        [StructLayout(LayoutKind.Sequential)]
+        public struct KEYBDINPUT
+        {
+            public short wVk;
+            public short wScan;
+            public int dwFlags;
+            public int time;
+            public IntPtr dwExtraInfo;
+        };
+
+        [StructLayout(LayoutKind.Sequential)]
+        public struct HARDWAREINPUT
+        {
+            public int uMsg;
+            public short wParamL;
+            public short wParamH;
+        };
+
+        [StructLayout(LayoutKind.Explicit)]
+        public struct INPUT_UNION
+        {
+            [FieldOffset(0)] public MOUSEINPUT mouse;
+            [FieldOffset(0)] public KEYBDINPUT keyboard;
+            [FieldOffset(0)] public HARDWAREINPUT hardware;
+        }
+
+        [StructLayout(LayoutKind.Sequential)]
+        public struct INPUT
+        {
+            public int type;
+            public INPUT_UNION ui;
+        };
+
+        [DllImport("USER32.dll", CallingConvention = CallingConvention.StdCall)]
+        static extern void SetCursorPos(int X, int Y);
+
+        [DllImport("USER32.dll", CallingConvention = CallingConvention.StdCall)]
+        static extern void mouse_event(int dwFlags, int dx, int dy, int cButtons, int dwExtraInfo);
+
+        [DllImport("user32.dll")]
+        static extern void SendInput(int nInputs, ref INPUT pInputs, int cbsize);
+
+        private const int INPUT_MOUSE = 0x0;
+        private const int MOUSEEVENTF_LEFTDOWN = 0x2;
+        private const int MOUSEEVENTF_LEFTUP = 0x4;
+        private const int MOUSEEVENTF_RIGHTDOWN = 0x8;
+        private const int MOUSEEVENTF_RIGHTUP = 0x10;
+        private const int MOUSEEVENTF_WHEEL = 0x0800;
+        private float _mouse_accel = 1.0f;
 
         private UdpClient _udpClient = null;
         private const int _port = 59630;
@@ -28,6 +90,7 @@ namespace keyboard_programable
         private string[] _key_letters = { "U", "D", "L", "R", "A", "B", "C", "D", "L", "l", "R", "r", "E", "T", "1", "2" };
         private string[] _key_layouts = { "UP", "DOWN", "LEFT", "RIGHT", "A", "B", "C", "D", "L1", "L2", "R1", "R2", "SELECT", "START", "1", "2" };
         private string _filename = "";
+        private string _exe_dir = "";
         private Parameter _param;
         private ToolTip _toolTipEdit;
         private ToolTip _toolTipHelp;
@@ -39,8 +102,8 @@ namespace keyboard_programable
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            string exe_dir = Path.GetDirectoryName(Application.ExecutablePath) + @"\";
-            _filename = exe_dir + "parameter.json";
+            _exe_dir = Path.GetDirectoryName(Application.ExecutablePath) + @"\";
+            _filename = _exe_dir + "parameter.json";
 
             _toolTipEdit = new ToolTip();
             _toolTipEdit.InitialDelay = 500;
@@ -91,17 +154,102 @@ namespace keyboard_programable
             var event_text = listView1.Items[key_index].SubItems[1].Text;
             if (event_text != "")
             {
-                SendKeys.Send(event_text);
+                if (event_text=="<SWITCH_MODE>")
+                {
+                    comboBoxLayout.SelectedIndex = (comboBoxLayout.SelectedIndex + 1) % comboBoxLayout.Items.Count;
+                }
+                else if (event_text.StartsWith("MOUSE")){
+                    if (event_text.IndexOf("LCLICK") >= 0)
+                    {
+                        mouse_event(MOUSEEVENTF_LEFTDOWN, 0, 0, 0, 0);
+                        mouse_event(MOUSEEVENTF_LEFTUP, 0, 0, 0, 0);
+                    }
+                    else if (event_text.IndexOf("RCLICK") >= 0)
+                    {
+                        mouse_event(MOUSEEVENTF_RIGHTDOWN, 0, 0, 0, 0);
+                        mouse_event(MOUSEEVENTF_RIGHTUP, 0, 0, 0, 0);
+                    }
+                }
+                else
+                {
+                    SendKeys.Send(event_text);
+                }
+            }
+        }
+
+        private void mouseEvent(string msg, float mouse_accel)
+        {
+            int offset_x = 0;
+            int offset_y = 0;
+            int offset_w = 0;
+            for (int i = 0; i < Math.Min(_key_letters.Length, msg.Length); i++)
+            {
+                string key_letter = msg.Substring(i, 1);
+                if (key_letter == _key_letters[i])
+                {
+                    var event_text = listView1.Items[i].SubItems[1].Text;
+                    if (event_text.StartsWith("MOUSE_UP_"))
+                    {
+                        offset_y -= int.Parse(event_text.Replace("MOUSE_UP_", ""));
+                    }
+                    else if (event_text.StartsWith("MOUSE_DOWN_"))
+                    {
+                        offset_y += int.Parse(event_text.Replace("MOUSE_DOWN_", ""));
+                    }
+                    if (event_text.StartsWith("MOUSE_LEFT_"))
+                    {
+                        offset_x -= int.Parse(event_text.Replace("MOUSE_LEFT_", ""));
+                    }
+                    else if (event_text.StartsWith("MOUSE_RIGHT_"))
+                    {
+                        offset_x += int.Parse(event_text.Replace("MOUSE_RIGHT_", ""));
+                    }
+                    else if (event_text.StartsWith("MOUSE_WHEEL_"))
+                    {
+                        offset_w = int.Parse(event_text.Replace("MOUSE_WHEEL_", ""));
+                    }
+
+                }
+            }
+
+            if (offset_x != 0 || offset_y != 0)
+            {
+                // mouse move
+                int x = System.Windows.Forms.Cursor.Position.X;
+                int y = System.Windows.Forms.Cursor.Position.Y;
+                System.Windows.Forms.Cursor.Position = new System.Drawing.Point(x + (int)(offset_x * mouse_accel), y + (int)(offset_y * mouse_accel));
+            }
+            if (offset_w != 0) {
+                // wheel move
+                INPUT input = new INPUT
+                {
+                    type = INPUT_MOUSE,
+                    ui = new INPUT_UNION
+                    {
+                        mouse = new MOUSEINPUT
+                        {
+                            dwFlags = MOUSEEVENTF_WHEEL,
+                            dx = 0,
+                            dy = 0,
+                            mouseData = offset_w * 60,
+                            dwExtraInfo = IntPtr.Zero,
+                            time = 0
+                        }
+                    }
+                };
+                SendInput(1, ref input, Marshal.SizeOf(input));
             }
         }
 
         private void SetMessage(string msg)
         {
             labelMessage.Text = msg;
+
         }
 
         private void PerseEvent(string msg)
         {
+            bool press_any = false;
             for (int i = 0; i<Math.Min(_key_letters.Length,msg.Length); i++)
             {
                 string key_letter = msg.Substring(i, 1);
@@ -115,6 +263,17 @@ namespace keyboard_programable
                         pressKeyEvent(i);
                     }
                 }
+                press_any |= (key_letter != "_");
+            }
+            // for mouse
+            if (press_any)
+            {
+                _mouse_accel += 0.5f;
+                mouseEvent(msg, _mouse_accel);
+            }
+            else
+            {
+                _mouse_accel = 1.0f;
             }
         }
 
@@ -167,15 +326,11 @@ namespace keyboard_programable
 
         private void listView1_MouseDoubleClick(object sender, MouseEventArgs e)
         {
-            //TODO: open parameter.json default editor
-            //TODO: reload parameter.json
-            //TODO: select default layout
         }
 
         private void comboBoxLayout_SelectedIndexChanged(object sender, EventArgs e)
         {
-            int index = comboBoxLayout.SelectedIndex;
-            // TODO: load layout to listview
+            int index = comboBoxLayout.SelectedIndex;            
             var layout = _param.key_layouts[index];
             listView1.Items[0].SubItems[1].Text = layout.UP;
             listView1.Items[1].SubItems[1].Text = layout.DOWN;
@@ -193,6 +348,7 @@ namespace keyboard_programable
             listView1.Items[13].SubItems[1].Text = layout.START;
             listView1.Items[14].SubItems[1].Text = layout.ONE;
             listView1.Items[15].SubItems[1].Text = layout.TWO;
+            this.Icon = new System.Drawing.Icon(_exe_dir + layout.icon);
         }
 
         private void buttonHelp_Click(object sender, EventArgs e)
@@ -221,6 +377,7 @@ namespace keyboard_programable
     public class key_layout
     {
         public string name { get; set; }
+        public string icon { get; set; }
         public string UP { get; set; }
         public string DOWN { get; set; }
         public string LEFT { get; set; }
