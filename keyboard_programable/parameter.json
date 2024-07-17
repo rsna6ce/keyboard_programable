@@ -13,7 +13,7 @@
       "D": "S",
       "L1": "+(N)",
       "L2": "^(w)",
-      "R1": "",
+      "R1": "<SPECIAL_CODE1>",
       "R2": "",
       "SELECT": "^{TAB}",
       "START": "<SWITCH_MODE>",

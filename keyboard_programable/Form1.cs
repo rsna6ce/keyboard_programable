@@ -158,6 +158,15 @@ namespace keyboard_programable
                 {
                     comboBoxLayout.SelectedIndex = (comboBoxLayout.SelectedIndex + 1) % comboBoxLayout.Items.Count;
                 }
+                else if (event_text=="<SPECIAL_CODE1>")
+                {
+                    int x = 0;
+                    int y = System.Windows.Forms.Screen.PrimaryScreen.WorkingArea.Height / 2;
+                    System.Windows.Forms.Cursor.Position = new System.Drawing.Point(x, y);
+                    mouse_event(MOUSEEVENTF_LEFTDOWN, 0, 0, 0, 0);
+                    mouse_event(MOUSEEVENTF_LEFTUP, 0, 0, 0, 0);
+                    SendKeys.Send("{TAB}{ENTER}");
+                }
                 else if (event_text.StartsWith("MOUSE")){
                     if (event_text.IndexOf("LCLICK") >= 0)
                     {
