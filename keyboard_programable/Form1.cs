@@ -16,7 +16,7 @@ using System.Text.Encodings.Web;
 using System.Text.Unicode;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
-
+using System.Threading;
 
 
 namespace keyboard_programable
@@ -162,10 +162,13 @@ namespace keyboard_programable
                 {
                     int x = 0;
                     int y = System.Windows.Forms.Screen.PrimaryScreen.WorkingArea.Height / 2;
-                    System.Windows.Forms.Cursor.Position = new System.Drawing.Point(x, y);
-                    mouse_event(MOUSEEVENTF_LEFTDOWN, 0, 0, 0, 0);
-                    mouse_event(MOUSEEVENTF_LEFTUP, 0, 0, 0, 0);
-                    SendKeys.Send("{TAB}{ENTER}");
+                    //System.Windows.Forms.Cursor.Position = new System.Drawing.Point(x, y);
+                    mouse_event(MOUSEEVENTF_RIGHTDOWN, 0, 0, 0, 0);
+                    mouse_event(MOUSEEVENTF_RIGHTUP, 0, 0, 0, 0);
+                    Thread.Sleep(100);
+                    SendKeys.Send("{DOWN}{DOWN}{DOWN}{DOWN}{DOWN}{DOWN}{DOWN}{DOWN}{DOWN}{ENTER}");
+                    Thread.Sleep(500);
+                    SendKeys.Send("{ENTER}");
                 }
                 else if (event_text.StartsWith("MOUSE")){
                     if (event_text.IndexOf("LCLICK") >= 0)
